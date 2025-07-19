@@ -1,0 +1,19 @@
+{
+    "name": "Youtube-Rag-Assistant",
+    "manifest_version": 3,
+    "version": "1.0.0",
+    "action": {
+        "default_popup": "index.html"
+    },
+    "permissions": [
+        "scripting"
+    ],
+    "host_permissions":[
+        "http://*/*",
+        "https://*/*"
+
+    ],
+    "icons": {
+        "64":"icon.png"
+    }
+}
