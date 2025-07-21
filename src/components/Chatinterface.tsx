@@ -36,9 +36,9 @@ const Chatinterface = () => {
     setchat(prev => [...prev, { type: "user", text: question }]);
 
     try {
-      const url = await getCurrentTabUrl();
+      const VideoUrl = await getCurrentTabUrl();
       const res = await fetch(
-        `http://localhost:8000/query?video_url=${encodeURIComponent(url)}&question=${encodeURIComponent(question)}`,
+        `http://localhost:8000/query?video_url=${encodeURIComponent(VideoUrl)}&question=${encodeURIComponent(question)}`,
         {
           method: "POST",
         }
