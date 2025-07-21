@@ -6,14 +6,16 @@
         "default_popup": "index.html"
     },
     "permissions": [
-        "scripting"
+        "scripting","tabs","activeTab"
     ],
     "host_permissions":[
-        "http://*/*",
-        "https://*/*"
+        "<all_urls>"
 
     ],
     "icons": {
         "64":"icon.png"
+    },
+    "background": {
+        "service_worker": "background.js"
     }
 }
