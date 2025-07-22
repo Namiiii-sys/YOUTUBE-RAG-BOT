@@ -1,0 +1,29 @@
+# Ignore Python virtual environments
+**/myvenv/
+**/venv/
+**/.env
+
+# Bytecode
+*.pyc
+__pycache__/
+
+# Node modules
+**/node_modules/
+
+# OS/system files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Env config
+.env
+.env.*
+
+# VSCode
+.vscode/
+
+# Build output
+dist/
+build/
