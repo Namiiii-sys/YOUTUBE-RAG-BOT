@@ -16,12 +16,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from fastapi import Form
+
 @app.post("/login")
-def login(username: str, password: str):
+def login(username: str = Form(...), password: str = Form(...)):
     if username == "admin" and password == "admin123":
         token = create_access_token({"sub": username})
         return {"access_token": token, "token_type": "bearer"}
     raise HTTPException(status_code=401, detail="Invalid credentials")
+
 
 @app.get("/protected-endpoint")
 def protected_route(user=Depends(verify_token)):

@@ -16,7 +16,8 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 prompt = PromptTemplate(
     template="""
     You are a helpful assistant.
-    Answer ONLY from the provided transcript context in bullet points.
+    Answer ONLY from the provided transcript context in a proper format.
+    If the user greets you (e.g. hi, hello), reply warmly before addressing anything else.
 
     {context}
     Question: {question}
