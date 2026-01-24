@@ -1,10 +1,7 @@
-from fastapi import FastAPI, Query
-from ragmodel import answer_question
+from fastapi import FastAPI, Query, Depends, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI, Depends
-from auth import create_access_token, verify_token
-from fastapi import HTTPException
 from ragmodel import answer_question
+from auth import verify_token
 
 app = FastAPI()
 
@@ -16,25 +13,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from fastapi import Form
-
-@app.post("/login")
-def login(username: str = Form(...), password: str = Form(...)):
-    if username == "admin" and password == "admin123":
-        token = create_access_token({"sub": username})
-        return {"access_token": token, "token_type": "bearer"}
-    raise HTTPException(status_code=401, detail="Invalid credentials")
-
-
-@app.get("/protected-endpoint")
-def protected_route(user=Depends(verify_token)):
-    return {"message": "You're authenticated!", "user": user}
-
 @app.get("/")
 def root():
     return {"status": "API is running!"}
 
 @app.post("/query")
-def query(video_url: str = Query(...), question: str = Query(...)):
+def query(video_url: str = Query(...), question: str = Query(...), user: dict = Depends(verify_token)):
+    # user dict contains firebase token claims (e.g. user['uid'], user['email'])
+    print(f"Authenticated user: {user.get('email', 'unknown')}")
     response = answer_question(video_url, question)
     return {"answer": response}
