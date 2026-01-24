@@ -10,7 +10,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # frontend Vite dev server
+    allow_origins=["*"],  # Allow all origins for extension access
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

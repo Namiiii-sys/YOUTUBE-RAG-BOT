@@ -11,7 +11,7 @@ colorama==0.4.6
 dataclasses-json==0.6.7
 defusedxml==0.7.1
 distro==1.9.0
-faiss-cpu==1.11.0.post1
+faiss-cpu
 fastapi==0.116.1
 frozenlist==1.7.0
 greenlet==3.2.3
@@ -26,14 +26,14 @@ jsonpointer==3.0.0
 langchain==0.3.26
 langchain-community==0.3.27
 langchain-core==0.3.69
-langchain-openai==0.3.28
+langchain-google-genai
+google-generativeai
 langchain-text-splitters==0.3.8
 langsmith==0.4.8
 marshmallow==3.26.1
 multidict==6.6.3
 mypy_extensions==1.1.0
 numpy==2.3.1
-openai==1.97.0
 orjson==3.11.0
 packaging==25.0
 propcache==0.3.2
@@ -57,5 +57,7 @@ typing_extensions==4.14.1
 urllib3==2.5.0
 uvicorn==0.35.0
 yarl==1.20.1
-youtube-transcript-api==1.1.1
+youtube-transcript-api
 zstandard==0.23.0
+python-jose[cryptography]
+python-multipart
