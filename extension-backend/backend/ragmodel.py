@@ -18,10 +18,12 @@ prompt = PromptTemplate(
     You are a helpful YouTube assistant powered by Google Gemini.
     
     INSTRUCTIONS:
-    1. If the user's input is a greeting (e.g., "Hi", "Hello", "Hey"), reply with a warm, short greeting introducing yourself as "YouTube RAG Bot". DO NOT use the provided context for greetings.
-    2. For all other questions, answer ONLY based on the provided transcript context below.
-    3. If the answer is not in the context, say "I couldn't find the answer in the video transcript."
-    4. Format your answer with Markdown (bullet points, bold text) where appropriate for readability.
+    1. **Greetings**: If the user says "Hi", "Hello", "Hey", or similar *opening* greetings, reply with a warm greeting".
+    2. **Conversational**: If the user says "Okay", "Thanks", "Cool", etc., reply naturally (e.g., "Let me know if you have more questions!").
+    3. **Missing Transcript**: If the Context says "No transcript available" or similar, reply: "I'm sorry, but I cannot answer questions because no English transcript is available for this video."
+    4. **Context-Only**: For questions, answer **exclusively** based on the transcript below.
+    5. **Not Found**: If the answer isn't in the transcript, politley say: "The video doesn't seem to mention that specifically." (Do NOT say "I couldn't find the answer" repeatedly).
+    5. **Formatting**: Use Markdown (bold, bullets) for clarity.
 
     Context:
     {context}
@@ -59,40 +61,50 @@ def answer_question(video_url: str, question: str) -> str:
             vector_store = None
 
         # If no vector store yet, build it
+        transcript_error = None
+        
+        # If no vector store yet, build it
         if not vector_store:
-
             print(" Fetching transcript and building index")
-            
             try:
                 transcript_list = YouTubeTranscriptApi().fetch(video_id, languages=["en"])
                 transcript = " ".join(chunk.text for chunk in transcript_list)
+                
+                splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+                chunks = splitter.create_documents([transcript])
+    
+                vector_store = FAISS.from_documents(chunks, embeddings)
+                vector_store.save_local(index_path)
             except TranscriptsDisabled:
-                return " Transcript is disabled for this video."
+                transcript_error = "Transcript is disabled for this video."
             except NoTranscriptFound:
-                return " No English transcript is available for this video."
+                transcript_error = "No English transcript is available for this video."
             except Exception as e:
-                return f" Failed to fetch transcript: {str(e)}"
-
-         
-            splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-            chunks = splitter.create_documents([transcript])
-
-            vector_store = FAISS.from_documents(chunks, embeddings)
-            vector_store.save_local(index_path)
-
-        retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 10})
-
-        parallel_chain = RunnableParallel({
-            'context': retriever | RunnableLambda(format_docs),
-            'question': RunnablePassthrough()
-        })
+                transcript_error = f"Failed to fetch transcript: {str(e)}"
 
         llm = ChatGoogleGenerativeAI(
             model="gemini-flash-lite-latest", 
             temperature=0.1, 
             max_retries=5
         )
-        main_chain = parallel_chain | prompt | llm | StrOutputParser()
+
+        if vector_store:
+            retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 10})
+            parallel_chain = RunnableParallel({
+                'context': retriever | RunnableLambda(format_docs),
+                'question': RunnablePassthrough()
+            })
+            main_chain = parallel_chain | prompt | llm | StrOutputParser()
+        else:
+            # Fallback chain for no transcript
+            fallback_context = transcript_error or "No transcript available."
+            main_chain = (
+                RunnableParallel({
+                    'context': lambda x: fallback_context,
+                    'question': RunnablePassthrough()
+                })
+                | prompt | llm | StrOutputParser()
+            )
 
         answer = main_chain.invoke(question)
         print("Final answer:", answer)
