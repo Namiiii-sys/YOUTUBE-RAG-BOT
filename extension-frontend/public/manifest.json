@@ -1,0 +1,34 @@
+{
+    "name": "Youtube-Rag-Assistant",
+    "manifest_version": 3,
+    "version": "1.0.0",
+    "action": {
+        "default_popup": "index.html"
+    },
+    "permissions": [
+        "scripting",
+        "tabs",
+        "activeTab",
+        "identity"
+    ],
+    "host_permissions": [
+        "<all_urls>"
+    ],
+    "oauth2": {
+        "client_id": "1024726801843-mbgbk5tnotjsf422mp5gfocnpi3ledvl.apps.googleusercontent.com",
+        "scopes": [
+            "openid",
+            "email",
+            "profile"
+        ]
+    },
+    "icons": {
+        "64": "icon.png"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_security_policy": {
+        "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+    }
+}
