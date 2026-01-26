@@ -27,3 +27,6 @@ Thumbs.db
 # Build output
 dist/
 build/
+
+# Security
+**/firebase_service_account.json
