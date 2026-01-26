@@ -13,17 +13,17 @@ const Chatinterface = () => {
   const [question, setquestion] = useState("")
 
   const getCurrentTabUrl = (): Promise<string> => {
-  return new Promise((resolve) => {
+    return new Promise((resolve) => {
 
-    chrome.runtime.sendMessage({ type: "GET_CURRENT_TAB_URL" }, (response) => {
+      chrome.runtime.sendMessage({ type: "GET_CURRENT_TAB_URL" }, (response) => {
         if (chrome.runtime.lastError) {
-      console.error("Error getting URL:", chrome.runtime.lastError);
-    } else {
-      console.log("Fetched URL from background:", response.url);
-    }
-      resolve(response.url);
-     });
-     
+          console.error("Error getting URL:", chrome.runtime.lastError);
+        } else {
+          console.log("Fetched URL from background:", response.url);
+        }
+        resolve(response.url);
+      });
+
     });
   };
 
@@ -37,7 +37,7 @@ const Chatinterface = () => {
     try {
       const VideoUrl = await getCurrentTabUrl();
       const res = await fetch(
-        `http://localhost:8000/query?video_url=${encodeURIComponent(VideoUrl)}&question=${encodeURIComponent(question)}`,
+        `https://youtube-assistant-tu5u.onrender.com/query?video_url=${encodeURIComponent(VideoUrl)}&question=${encodeURIComponent(question)}`,
         {
           method: "POST",
         }
@@ -57,35 +57,35 @@ const Chatinterface = () => {
   return (
     <div className="w-[480px] h-[460px] px-6 py-5 overflow-hidden bg-black rounded-xl shadow-md flex flex-col">
       <h1 className="text-center text-2xl font-bold text-gray-100 mb-4">YouTube Assistant</h1>
-      
+
       <div className="h-3/4 w-full border border-gray-200 rounded-lg p-3 overflow-y-auto space-y-2">
         {chat.map((msg, i) => (
           <div
             key={i}
             className={`p-2 break-words whitespace-pre-wrap rounded-full text-sm w-fit max-w-[75%] ${msg.type === "user" ? "bg-white ml-auto text-black" : "bg-gray-700 text-white"}`}
           >
-           {msg.text.split('\n').map((line, idx) => {
+            {msg.text.split('\n').map((line, idx) => {
               const trimmed = line.trim();
 
-          // Numbered item (e.g., "1. something")
-           if (/^\d+\.\s/.test(trimmed)) {
-        return (
-        <ol key={idx} className="list-decimal list-inside">
-          <li>{trimmed.replace(/^\d+\.\s/, '')}</li>
-        </ol>
-        );
-       }
+              // Numbered item (e.g., "1. something")
+              if (/^\d+\.\s/.test(trimmed)) {
+                return (
+                  <ol key={idx} className="list-decimal list-inside">
+                    <li>{trimmed.replace(/^\d+\.\s/, '')}</li>
+                  </ol>
+                );
+              }
 
-       if (/^- /.test(trimmed)) {
-    return (
-      <ul key={idx} className="list-disc list-inside">
-        <li>{trimmed.replace(/^- /, '')}</li>
-      </ul>
-    );
-       }
+              if (/^- /.test(trimmed)) {
+                return (
+                  <ul key={idx} className="list-disc list-inside">
+                    <li>{trimmed.replace(/^- /, '')}</li>
+                  </ul>
+                );
+              }
 
-      return <p key={idx} className="my-1">{trimmed}</p>;
-      })}
+              return <p key={idx} className="my-1">{trimmed}</p>;
+            })}
 
 
           </div>
