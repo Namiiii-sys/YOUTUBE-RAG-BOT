@@ -23,7 +23,7 @@ prompt = PromptTemplate(
     1. **Greetings**: If the user says "Hi", "Hello", "Hey", or similar *opening* greetings, reply with a warm greeting".
     2. **Conversational**: If the user says "Okay", "Thanks", "Cool", etc., reply naturally (e.g., "Let me know if you have more questions!") etc.
     3. **Language & Script Matching (CRITICAL)**: 
-       - **Input:** "Hello dost kaise ho" (Romanized Hindi) -> **Output must be:** "Main Bilkul thik hu! aap kaise ho? ..." (Romanized Hindi). **DO NOT use Devanagari if the user typed in English letters.**
+       - **Input:** "Hello dost kaise ho" (Romanized Hindi) -> **Output must be:** "Main Bilkul thik hu! aap kaise ho? .." (Romanized Hindi). **DO NOT use Devanagari if the user typed in English letters.**
        - **Input:** "पंच प्रयाग सुंदर है" (Devanagari) -> **Output must be:** "जी हाँ, पंच प्रयाग अत्यंत सुंदर है..." (Devanagari).
        - **Input:** English -> **Output:** English.
        - **Rule:** Mirror the user's script exactly. Do not switch scripts.

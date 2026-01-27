@@ -1,4 +1,5 @@
 "use client"
+import { auth } from "../firebase";
 import { useState } from "react"
 import { BsFillSendFill } from "react-icons/bs"
 
@@ -28,6 +29,8 @@ const Chatinterface = () => {
   };
 
 
+
+
   const handleAsk = async () => {
     if (!question.trim()) return;
 
@@ -35,19 +38,38 @@ const Chatinterface = () => {
     setchat(prev => [...prev, { type: "user", text: question }]);
 
     try {
+      // 1. Get Auth Token
+      const user = auth.currentUser;
+      if (!user) {
+        setchat(prev => [...prev, { type: "bot", text: "Error: You must be logged in." }]);
+        setloading(false);
+        return;
+      }
+      const token = await user.getIdToken();
+
+      // 2. Get Video URL
       const VideoUrl = await getCurrentTabUrl();
+
+      // 3. Fetch from Deployed Backend
       const res = await fetch(
-        `https://localhost:8000/query?video_url=${encodeURIComponent(VideoUrl)}&question=${encodeURIComponent(question)}`,
+        `https://youtube-assistant-tu5u.onrender.com/query?video_url=${encodeURIComponent(VideoUrl)}&question=${encodeURIComponent(question)}`,
         {
           method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
         }
       );
+
+      if (!res.ok) {
+        throw new Error(`Server error: ${res.status}`);
+      }
 
       const data = await res.json();
       setchat(prev => [...prev, { type: "bot", text: data.answer || "No message detected" }]);
     } catch (err) {
       console.error("Error while fetching:", err);
-      setchat(prev => [...prev, { type: "bot", text: "Some error occurred" }]);
+      setchat(prev => [...prev, { type: "bot", text: `Error: ${err}` }]);
     }
 
     setquestion("");

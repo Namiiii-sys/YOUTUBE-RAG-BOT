@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <h2>CORS Test</h2>
+    <button onclick="test()">Test Fetch</button>
+    <div id="output"></div>
+    <script>
+        async function test() {
+            const output = document.getElementById('output');
+            output.innerHTML = "Testing...";
+            try {
+                const res = await fetch("https://youtube-assistant-tu5u.onrender.com/", {
+                    method: "GET"
+                });
+                output.innerHTML = "GET Root Status: " + res.status;
+
+                const videoUrl = "https://www.youtube.com/watch?v=BNHe5KNOW6A";
+                const question = "hi";
+                // We can't easily get a valid token here, so we expect 401 or 403
+                // If we get "Failed to fetch", it's CORS/Network.
+                const res2 = await fetch(`https://youtube-assistant-tu5u.onrender.com/query?video_url=${encodeURIComponent(videoUrl)}&question=${encodeURIComponent(question)}`, {
+                    method: "POST"
+                });
+                output.innerHTML += "<br>POST Query Status: " + res2.status;
+
+            } catch (e) {
+                output.innerHTML += "<br>Error: " + e.message;
+            }
+        }
+    </script>
+</body>
+
+</html>
