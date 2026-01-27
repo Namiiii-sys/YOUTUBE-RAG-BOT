@@ -62,3 +62,4 @@ zstandard==0.23.0
 python-jose[cryptography]
 python-multipart
 firebase-admin
+langchain-groq

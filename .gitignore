@@ -30,3 +30,4 @@ build/
 
 # Security
 **/firebase_service_account.json
+faiss_indexes/

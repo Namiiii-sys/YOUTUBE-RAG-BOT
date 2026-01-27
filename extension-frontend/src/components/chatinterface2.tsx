@@ -37,7 +37,7 @@ const Chatinterface = () => {
     try {
       const VideoUrl = await getCurrentTabUrl();
       const res = await fetch(
-        `https://youtube-assistant-tu5u.onrender.com/query?video_url=${encodeURIComponent(VideoUrl)}&question=${encodeURIComponent(question)}`,
+        `https://localhost:8000/query?video_url=${encodeURIComponent(VideoUrl)}&question=${encodeURIComponent(question)}`,
         {
           method: "POST",
         }

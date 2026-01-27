@@ -3,6 +3,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from pathlib import Path
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain_community.vectorstores import FAISS
+from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough, RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
@@ -10,21 +11,27 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+groq_api_key = os.getenv("GROQ_API_KEY")
 google_api_key = os.getenv("GOOGLE_API_KEY")
 
 # Prompt Template
 prompt = PromptTemplate(
     template="""
-    You are a helpful YouTube assistant powered by Google Gemini.
+    You are a helpful YouTube assistant bot powered by HuggingFace.
     
     INSTRUCTIONS:
     1. **Greetings**: If the user says "Hi", "Hello", "Hey", or similar *opening* greetings, reply with a warm greeting".
     2. **Conversational**: If the user says "Okay", "Thanks", "Cool", etc., reply naturally (e.g., "Let me know if you have more questions!") etc.
-    3. **Missing Transcript**: If the Context says "No transcript available" or similar, reply: "I'm sorry, but I cannot answer questions because no English transcript is available for this video."
-    4. **Context-Only**: Answer the question based on the transcript provided.
-    5. **Synthesize**: If the exact answer isn't explicitly stated, try to synthesize an answer from relevant parts of the context. 
-    6. **Not Found**: If the answer is truly not in the transcript, kindly state: "I couldn't find that specific information in the video, but I can answer other questions about it!"
-    7. **Formatting**: Use Markdown (bold, bullets) for clarity.
+    3. **Language & Script Matching (CRITICAL)**: 
+       - **Input:** "Hello dost kaise ho" (Romanized Hindi) -> **Output must be:** "Main Bilkul thik hu! aap kaise ho? ..." (Romanized Hindi). **DO NOT use Devanagari if the user typed in English letters.**
+       - **Input:** "पंच प्रयाग सुंदर है" (Devanagari) -> **Output must be:** "जी हाँ, पंच प्रयाग अत्यंत सुंदर है..." (Devanagari).
+       - **Input:** English -> **Output:** English.
+       - **Rule:** Mirror the user's script exactly. Do not switch scripts.
+    4. **Missing Transcript**: If the Context says "No transcript available" or similar, reply: "I'm sorry, but I cannot answer questions because no transcript is available for this video.
+    5. **Context-Only**: Answer the question based on the transcript provided.
+    6. **Synthesize**: If the exact answer isn't explicitly stated, try to synthesize an answer from relevant parts of the context. 
+    7. **Not Found**: If the answer is truly not in the transcript, kindly state: "I couldn't find that specific information in the video, but I can answer other questions about it!"
+    8. **Formatting**: Use Markdown (bold, bullets) for clarity.
 
     Context:
     {context}
@@ -42,12 +49,12 @@ def format_docs(retrieved_docs):
 
 def answer_question(video_url: str, question: str) -> str:
     try:
-        if not google_api_key:
-            return "Error: GOOGLE_API_KEY not found in environment variables."
+        if not groq_api_key:
+            return "Error: GROQ_API_KEY not found in environment variables."
 
         video_id = video_url.split("v=")[-1]
         index_path = f"faiss_indexes/{video_id}"
-        embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
+        embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=google_api_key)
 
         # Try loading FAISS index if it exists
         if Path(index_path).exists():
@@ -68,7 +75,7 @@ def answer_question(video_url: str, question: str) -> str:
         if not vector_store:
             print(" Fetching transcript and building index")
             try:
-                transcript_list = YouTubeTranscriptApi().fetch(video_id, languages=["en"])
+                transcript_list = YouTubeTranscriptApi().fetch(video_id, languages=["en","hi"])
                 transcript = " ".join(chunk.text for chunk in transcript_list)
                 
                 splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
@@ -79,12 +86,12 @@ def answer_question(video_url: str, question: str) -> str:
             except TranscriptsDisabled:
                 transcript_error = "Transcript is disabled for this video."
             except NoTranscriptFound:
-                transcript_error = "No English transcript is available for this video."
+                transcript_error = "No English or Hindi transcript is available for this video."
             except Exception as e:
                 transcript_error = f"Failed to fetch transcript: {str(e)}"
 
-        llm = ChatGoogleGenerativeAI(
-            model="gemini-flash-lite-latest", 
+        llm = ChatGroq(
+            model="llama-3.3-70b-versatile", 
             temperature=0.1, 
             max_retries=5
         )
