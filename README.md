@@ -9,6 +9,7 @@ The extension extracts the video transcript, converts it into vector embeddings,
 
 ## Features
 
+- Secure user authentication using Firebase Authentication with Google OAuth
 - Automatic YouTube transcript extraction  
 - Semantic chunking of transcript text  
 - Embedding generation  
@@ -21,7 +22,8 @@ The extension extracts the video transcript, converts it into vector embeddings,
 
 ## Tech Stack
 
-- Python 3.10+  
+- Python 3.10+
+- Firebase Authentication (Google OAuth)
 - LangChain  
 - **Hugging Face Inference API**  
 - **LLaMA-3.1-8B-Instant**  
@@ -32,11 +34,12 @@ The extension extracts the video transcript, converts it into vector embeddings,
 
 ## High-Level Workflow
 
-1. Extract transcript from the active YouTube video  
-2. Split transcript into semantic chunks  
-3. Generate embeddings  
-4. Store and retrieve embeddings via FAISS  
-5. Generate grounded answers using a RAG pipeline  
+1. User signs in using Google OAuth
+2. Extract transcript from the active YouTube video  
+3. Split transcript into semantic chunks  
+4. Generate embeddings  
+5. Store and retrieve embeddings via FAISS  
+6. Generate grounded answers using a RAG pipeline  
 
 ---
 
