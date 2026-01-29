@@ -69,7 +69,7 @@ const Chatinterface = ({ user }: ChatProps) => {
       const token = await user.getIdToken()
 
       const res = await fetch(
-        `https://youtube-rag-backend.onrender.com/query?video_url=${encodeURIComponent(VideoUrl)}&question=${encodeURIComponent(currentQuestion)}`,
+        `https://youtube-assistant-tu5u.onrender.com/query?video_url=${encodeURIComponent(VideoUrl)}&question=${encodeURIComponent(currentQuestion)}`,
         {
           method: "POST",
           headers: {
