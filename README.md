@@ -1,18 +1,21 @@
 # YouTube Transcript Q&A Extension  
-(OpenAI + LangChain + FAISS)
+**(LangChain + FAISS + Hugging Face LLM)**
 
-A browser extension that enables question-answering directly on YouTube videos using a Retrieval-Augmented Generation (RAG) pipeline. The extension automatically extracts the video transcript, processes it into vector embeddings, and generates accurate, context-aware answers grounded strictly in the video content.
+A browser extension that enables **question-answering directly on YouTube videos** using a **Retrieval-Augmented Generation (RAG)** pipeline.  
+The extension extracts the video transcript, converts it into vector embeddings, and generates **accurate, context-aware answers grounded strictly in the video content** now with **multilingual support** 
 
 ---
+
 
 ## Features
 
 - Automatic YouTube transcript extraction  
 - Semantic chunking of transcript text  
-- Embedding generation using OpenAI  
-- Vector storage and similarity search with FAISS  
+- Embedding generation  
+- Vector storage and similarity search using FAISS  
 - Structured RAG pipeline using LangChain Runnables  
-- Context-aware question answering based on the video transcript  
+- **Grounded answers strictly based on the video transcript**  
+- **Multilingual Q&A (English, Hindi, Hinglish)**  
 
 ---
 
@@ -20,7 +23,8 @@ A browser extension that enables question-answering directly on YouTube videos u
 
 - Python 3.10+  
 - LangChain  
-- OpenAI API  
+- **Hugging Face Inference API**  
+- **LLaMA-3.1-8B-Instant**  
 - FAISS  
 - YouTube Transcript API  
 
@@ -30,9 +34,35 @@ A browser extension that enables question-answering directly on YouTube videos u
 
 1. Extract transcript from the active YouTube video  
 2. Split transcript into semantic chunks  
-3. Generate embeddings using OpenAI  
+3. Generate embeddings  
 4. Store and retrieve embeddings via FAISS  
 5. Generate grounded answers using a RAG pipeline  
 
 ---
 
+## Multilingual Support
+
+The extension intelligently handles:
+
+- **English questions**
+- **Hindi questions (native script)**
+- **Romanized Hindi (Hinglish)**
+
+All answers are generated **only from the video transcript**, ensuring factual consistency and preventing hallucinations.
+
+---
+
+## Snippets
+
+### Hindi Queries
+
+<p float="left">
+  <img src="https://github.com/user-attachments/assets/4e8d38df-5027-4010-b532-993ddc71120c" width="48%" />
+  <img src="https://github.com/user-attachments/assets/e04e1cee-61b7-49a0-9578-c2c01497ecb4" width="48%" />
+</p>
+
+### English Queries
+
+<p float="center">
+  <img src="https://github.com/user-attachments/assets/129904fd-420f-4860-8dbb-16711d3cbb19" width="90%" />
+</p>
