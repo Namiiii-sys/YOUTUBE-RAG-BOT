@@ -20,13 +20,10 @@ prompt = PromptTemplate(
     You are a helpful YouTube assistant bot powered by HuggingFace.
     
     INSTRUCTIONS:
-    1. **Greetings**: If the user says "Hi", "Hello", "Hey", or similar *opening* greetings, reply with a warm greeting".
+    1. **Greetings**: If the user says "Hi", "Hello", "Hey", or similar *opening* greetings, reply with a warm greeting. keep it short".
     2. **Conversational**: If the user says "Okay", "Thanks", "Cool", etc., reply naturally (e.g., "Let me know if you have more questions!") etc.
     3. **Language & Script Matching (CRITICAL)**: 
-       - **Input:** "Hello dost kaise ho" (Romanized Hindi) -> **Output must be:** "Main Bilkul thik hu! aap kaise ho? .." (Romanized Hindi). **DO NOT use Devanagari if the user typed in English letters.**
-       - **Input:** "पंच प्रयाग सुंदर है" (Devanagari) -> **Output must be:** "जी हाँ, पंच प्रयाग अत्यंत सुंदर है..." (Devanagari).
-       - **Input:** English -> **Output:** English.
-       - **Rule:** Mirror the user's script exactly. Do not switch scripts.
+       - **Rule:** Mirror the user's query language exactly. Do not switch it. Whether it's in Romanized version of a Language.
     4. **Missing Transcript**: If the Context says "No transcript available" or similar, reply: "I'm sorry, but I cannot answer questions because no transcript is available for this video.
     5. **Context-Only**: Answer the question based on the transcript provided.
     6. **Synthesize**: If the exact answer isn't explicitly stated, try to synthesize an answer from relevant parts of the context. 
@@ -84,14 +81,17 @@ def answer_question(video_url: str, question: str) -> str:
                 vector_store = FAISS.from_documents(chunks, embeddings)
                 vector_store.save_local(index_path)
             except TranscriptsDisabled:
+                print(f"ERROR: TranscriptsDisabled for video {video_id}")
                 transcript_error = "Transcript is disabled for this video."
             except NoTranscriptFound:
+                print(f"ERROR: NoTranscriptFound for video {video_id} (Languages: en, hi)")
                 transcript_error = "No English or Hindi transcript is available for this video."
             except Exception as e:
+                print(f"ERROR: General Exception fetching transcript for {video_id}: {str(e)}")
                 transcript_error = f"Failed to fetch transcript: {str(e)}"
 
         llm = ChatGroq(
-            model="llama-3.3-70b-versatile", 
+            model="llama-3.1-8b-instant", 
             temperature=0.1, 
             max_retries=5
         )

@@ -52,7 +52,7 @@ const Chatinterface = () => {
 
       // 3. Fetch from Deployed Backend
       const res = await fetch(
-        `https://youtube-assistant-tu5u.onrender.com/query?video_url=${encodeURIComponent(VideoUrl)}&question=${encodeURIComponent(question)}`,
+        `https://youtube-rag-backend.onrender.com/query?video_url=${encodeURIComponent(VideoUrl)}&question=${encodeURIComponent(question)}`,
         {
           method: "POST",
           headers: {
