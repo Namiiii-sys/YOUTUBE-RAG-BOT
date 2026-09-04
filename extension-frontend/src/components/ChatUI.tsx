@@ -18,14 +18,14 @@ const ChatWrapper = () => {
 
   if (loading) {
     return (
-      <div className="w-[500px] h-[500px] bg-gray-100 flex items-center justify-center">
+      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
         <p className="text-gray-500">Loading...</p>
       </div>
     )
   }
 
   return (
-    <div className="w-[500px] h-[500px] bg-gray-100 text-gray-900 rounded-2xl shadow-md flex flex-col overflow-hidden">
+    <div className="w-full h-full bg-gray-100 text-gray-900 shadow-md flex flex-col overflow-hidden">
       {!user ? (
         <Login />
       ) : (

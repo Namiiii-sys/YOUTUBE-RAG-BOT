@@ -1,1 +1,12 @@
 @import "tailwindcss";
+
+html, body, #root {
+  width: 450px;
+  height: 550px;
+  min-width: 450px;
+  min-height: 550px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
